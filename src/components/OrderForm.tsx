@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import type { OrderFormData } from '../types';
+import { formatTurkishPhone, isValidTurkishPhone } from '../utils/phone';
 import './OrderForm.css';
 
 interface OrderFormProps {
@@ -20,7 +21,12 @@ export function OrderForm({ onSubmit, onCancel }: OrderFormProps) {
     const newErrors: Partial<OrderFormData> = {};
     if (!form.firstName.trim()) newErrors.firstName = 'İsim zorunludur';
     if (!form.lastName.trim()) newErrors.lastName = 'Soyisim zorunludur';
-    if (!form.phone.trim()) newErrors.phone = 'Telefon zorunludur';
+    if (!form.phone.trim()) {
+      newErrors.phone = 'Telefon zorunludur';
+    } else if (!isValidTurkishPhone(form.phone)) {
+      newErrors.phone =
+        'Geçerli bir Türkiye telefon numarası girin (örn: 05XX XXX XX XX)';
+    }
     if (!form.address.trim()) newErrors.address = 'Adres zorunludur';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -28,7 +34,12 @@ export function OrderForm({ onSubmit, onCancel }: OrderFormProps) {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (validate()) onSubmit(form);
+    if (!validate()) return;
+
+    onSubmit({
+      ...form,
+      phone: formatTurkishPhone(form.phone),
+    });
   };
 
   const update = (field: keyof OrderFormData, value: string) => {
@@ -69,9 +80,12 @@ export function OrderForm({ onSubmit, onCancel }: OrderFormProps) {
         <input
           id="phone"
           type="tel"
+          inputMode="tel"
+          autoComplete="tel"
           value={form.phone}
           onChange={(e) => update('phone', e.target.value)}
           placeholder="05XX XXX XX XX"
+          maxLength={17}
         />
         {errors.phone && <span className="order-form__error">{errors.phone}</span>}
       </div>

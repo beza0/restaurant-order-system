@@ -1,0 +1,9 @@
+.admin-app {
+  min-height: 100vh;
+  background: #0f1419;
+  color: #e7e9ea;
+}
+
+.admin-app .container {
+  max-width: 1280px;
+}

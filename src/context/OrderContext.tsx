@@ -13,15 +13,18 @@ import {
   getActiveOrderId,
   getOrderById,
   getOrders,
+  purgeOldOrders,
+  setActiveOrderId,
   updateOrder as persistUpdateOrder,
 } from '../utils/storage';
+import { getMsUntilNextMidnightIstanbul } from '../utils/date';
 import { useCart } from './CartContext';
 
 interface OrderContextValue {
   orders: Order[];
   activeOrder: Order | null;
-  showRejectionModal: boolean;
-  dismissRejectionModal: () => void;
+  markRejectionSeen: () => void;
+  dismissDeliveredStrip: () => void;
   createOrder: (form: OrderFormData) => Order | null;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   acceptOrder: (orderId: string) => void;
@@ -37,9 +40,9 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const [activeOrderId, setActiveOrderIdState] = useState<string | null>(() =>
     getActiveOrderId()
   );
-  const [showRejectionModal, setShowRejectionModal] = useState(false);
 
   const refreshOrders = useCallback(() => {
+    purgeOldOrders();
     setOrders(getOrders());
     setActiveOrderIdState(getActiveOrderId());
   }, []);
@@ -52,8 +55,20 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       }
     };
     window.addEventListener('storage', onStorage);
+
+    const scheduleMidnightPurge = () => {
+      const delay = getMsUntilNextMidnightIstanbul();
+      return window.setTimeout(() => {
+        refreshOrders();
+        midnightTimer = scheduleMidnightPurge();
+      }, delay);
+    };
+
+    let midnightTimer = scheduleMidnightPurge();
+
     return () => {
       clearInterval(interval);
+      clearTimeout(midnightTimer);
       window.removeEventListener('storage', onStorage);
     };
   }, [refreshOrders]);
@@ -63,21 +78,19 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     [activeOrderId, orders]
   );
 
-  useEffect(() => {
-    if (
-      activeOrder?.status === 'Reddedildi' &&
-      !activeOrder.rejectionSeen
-    ) {
-      setShowRejectionModal(true);
-    }
-  }, [activeOrder]);
-
-  const dismissRejectionModal = useCallback(() => {
+  const markRejectionSeen = useCallback(() => {
     if (activeOrderId) {
       persistUpdateOrder(activeOrderId, { rejectionSeen: true });
       refreshOrders();
     }
-    setShowRejectionModal(false);
+  }, [activeOrderId, refreshOrders]);
+
+  const dismissDeliveredStrip = useCallback(() => {
+    if (activeOrderId) {
+      persistUpdateOrder(activeOrderId, { deliveryDismissed: true });
+      setActiveOrderId(null);
+      refreshOrders();
+    }
   }, [activeOrderId, refreshOrders]);
 
   const createOrder = useCallback(
@@ -132,8 +145,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     () => ({
       orders,
       activeOrder,
-      showRejectionModal,
-      dismissRejectionModal,
+      markRejectionSeen,
+      dismissDeliveredStrip,
       createOrder,
       updateOrderStatus,
       acceptOrder,
@@ -143,8 +156,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     [
       orders,
       activeOrder,
-      showRejectionModal,
-      dismissRejectionModal,
+      markRejectionSeen,
+      dismissDeliveredStrip,
       createOrder,
       updateOrderStatus,
       acceptOrder,

@@ -5,6 +5,7 @@ export type OrderStatus =
   | 'Kabul Edildi'
   | 'Hazırlanıyor'
   | 'Yola Çıktı'
+  | 'Teslim Edildi'
   | 'Reddedildi';
 
 export interface Product {
@@ -39,6 +40,7 @@ export interface Order {
   status: OrderStatus;
   createdAt: string;
   rejectionSeen?: boolean;
+  deliveryDismissed?: boolean;
 }
 
 export interface OrderFormData {

@@ -1,4 +1,5 @@
 import type { Order } from '../types';
+import { isOrderFromToday } from './date';
 
 const ORDERS_KEY = 'kzd_orders';
 const ACTIVE_ORDER_KEY = 'kzd_active_order_id';
@@ -47,6 +48,21 @@ export function updateOrder(orderId: string, updates: Partial<Order>): Order | n
 
 export function getOrderById(orderId: string): Order | null {
   return getOrders().find((o) => o.id === orderId) ?? null;
+}
+
+/** Gece 00:00 sonrası önceki günün siparişlerini temizler. */
+export function purgeOldOrders(): void {
+  const orders = getOrders();
+  const todayOrders = orders.filter((o) => isOrderFromToday(o.createdAt));
+
+  if (todayOrders.length === orders.length) return;
+
+  saveOrders(todayOrders);
+
+  const activeId = getActiveOrderId();
+  if (activeId && !todayOrders.some((o) => o.id === activeId)) {
+    setActiveOrderId(null);
+  }
 }
 
 export function formatPrice(price: number): string {

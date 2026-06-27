@@ -1,0 +1,9 @@
+.customer-layout--with-strip {
+  padding-bottom: 5.5rem;
+}
+
+@media (max-width: 768px) {
+  .customer-layout--with-strip {
+    padding-bottom: 7rem;
+  }
+}

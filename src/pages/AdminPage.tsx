@@ -1,5 +1,6 @@
 import { useOrders } from '../context/OrderContext';
 import type { Order, OrderStatus } from '../types';
+import { isOrderFromToday } from '../utils/date';
 import { formatDate, formatPrice } from '../utils/storage';
 import './AdminPage.css';
 
@@ -8,6 +9,7 @@ const STATUS_CLASS: Record<OrderStatus, string> = {
   'Kabul Edildi': 'accepted',
   'Hazırlanıyor': 'preparing',
   'Yola Çıktı': 'delivering',
+  'Teslim Edildi': 'delivered',
   Reddedildi: 'rejected',
 };
 
@@ -95,6 +97,16 @@ function OrderCard({ order }: { order: Order }) {
             Yola Çıktı
           </button>
         )}
+
+        {order.status === 'Yola Çıktı' && (
+          <button
+            type="button"
+            className="btn btn--success"
+            onClick={() => updateOrderStatus(order.id, 'Teslim Edildi')}
+          >
+            Teslim Edildi
+          </button>
+        )}
       </div>
     </article>
   );
@@ -103,7 +115,8 @@ function OrderCard({ order }: { order: Order }) {
 export function AdminPage() {
   const { orders } = useOrders();
 
-  const pendingCount = orders.filter((o) => o.status === 'Onay Bekliyor').length;
+  const todayOrders = orders.filter((o) => isOrderFromToday(o.createdAt));
+  const pendingCount = todayOrders.filter((o) => o.status === 'Onay Bekliyor').length;
 
   return (
     <main className="admin">
@@ -115,8 +128,8 @@ export function AdminPage() {
           </div>
           <div className="admin__stats">
             <div className="admin__stat">
-              <span className="admin__stat-value">{orders.length}</span>
-              <span className="admin__stat-label">Toplam Sipariş</span>
+              <span className="admin__stat-value">{todayOrders.length}</span>
+              <span className="admin__stat-label">Bugünkü Sipariş</span>
             </div>
             <div className="admin__stat admin__stat--highlight">
               <span className="admin__stat-value">{pendingCount}</span>
@@ -125,15 +138,15 @@ export function AdminPage() {
           </div>
         </div>
 
-        {orders.length === 0 ? (
+        {todayOrders.length === 0 ? (
           <div className="admin__empty">
             <span>📋</span>
             <h2>Henüz sipariş yok</h2>
-            <p>Müşteri tarafından verilen siparişler burada görünecek.</p>
+            <p>Bugünkü siparişler burada görünecek. Sayaç her gece 00:00&apos;da sıfırlanır.</p>
           </div>
         ) : (
           <div className="admin__grid">
-            {orders.map((order) => (
+            {todayOrders.map((order) => (
               <OrderCard key={order.id} order={order} />
             ))}
           </div>

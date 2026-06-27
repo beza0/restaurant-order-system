@@ -217,6 +217,5 @@ export const CONTACT_INFO = {
   phones: ['0216 376 01 56', '0216 383 21 56', '0501 369 56 56'],
   address: 'Zümrütevler, Nil Cd. 58/A, 34852 Maltepe/İstanbul',
   hours: 'Her gün 10:30 – 23:00',
-  mapQuery: 'Kardeşler Zurna Dürüm, Zümrütevler, Nil Cd. 58/A, Maltepe, İstanbul',
   mapUrl: 'https://maps.google.com/?q=Z%C3%BCmr%C3%BCtevler,+Nil+Cd.+58%2FA,+34852+Maltepe%2F%C4%B0stanbul',
 };

@@ -1,46 +1,27 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { Logo } from './Logo';
 import './Header.css';
 
 export function Header() {
   const { itemCount, toggleCart } = useCart();
-  const location = useLocation();
-  const isAdmin = location.pathname.startsWith('/admin');
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  if (isAdmin) {
-    return (
-      <header className="header header--admin">
-        <div className="header__inner container">
-          <Link to="/" className="header__logo">
-            <span className="header__logo-icon">K</span>
-            <span>Kardeşler Zurna Dürüm</span>
-          </Link>
-          <Link to="/" className="header__admin-link">
-            ← Müşteri Sitesi
-          </Link>
-        </div>
-      </header>
-    );
-  }
-
   return (
     <header className="header">
       <div className="header__inner container">
         <Link to="/" className="header__logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <span className="header__logo-icon">K</span>
-          <span>Kardeşler Zurna Dürüm</span>
+          <Logo />
         </Link>
 
         <nav className="header__nav">
           <button type="button" onClick={() => scrollTo('about')}>Hakkımızda</button>
           <button type="button" onClick={() => scrollTo('menu')}>Menü</button>
           <button type="button" onClick={() => scrollTo('contact')}>İletişim</button>
-          <Link to="/admin" className="header__admin-link">Admin</Link>
         </nav>
 
         <button
