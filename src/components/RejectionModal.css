@@ -1,0 +1,69 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 300;
+  animation: fadeIn 0.2s ease;
+}
+
+.rejection-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  z-index: 301;
+  text-align: center;
+  max-width: 400px;
+  width: calc(100% - 2rem);
+  box-shadow: var(--shadow-xl);
+  animation: modalIn 0.3s ease;
+}
+
+.rejection-modal__icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 auto 1rem;
+}
+
+.rejection-modal h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.rejection-modal p {
+  color: var(--color-gray-600);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.rejection-modal .btn {
+  min-width: 120px;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
