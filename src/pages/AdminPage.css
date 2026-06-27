@@ -41,6 +41,10 @@
   border-color: var(--color-primary);
 }
 
+.admin-app .admin__stat--earnings {
+  border-color: #22c55e;
+}
+
 .admin-app .admin__stat-value {
   display: block;
   font-size: 1.75rem;
@@ -50,6 +54,11 @@
 
 .admin-app .admin__stat--highlight .admin__stat-value {
   color: var(--color-primary-light);
+}
+
+.admin-app .admin__stat--earnings .admin__stat-value {
+  color: #4ade80;
+  font-size: 1.35rem;
 }
 
 .admin-app .admin__stat-label {
@@ -211,5 +220,15 @@
 
   .admin-app .admin-order__actions {
     flex-direction: column;
+  }
+
+  .admin-app .admin__stats {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .admin-app .admin__stat {
+    flex: 1;
+    min-width: calc(50% - 0.5rem);
   }
 }

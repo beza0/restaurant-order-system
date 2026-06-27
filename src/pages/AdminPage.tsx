@@ -117,6 +117,9 @@ export function AdminPage() {
 
   const todayOrders = orders.filter((o) => isOrderFromToday(o.createdAt));
   const pendingCount = todayOrders.filter((o) => o.status === 'Onay Bekliyor').length;
+  const todayEarnings = todayOrders
+    .filter((o) => o.status === 'Teslim Edildi')
+    .reduce((sum, o) => sum + o.total, 0);
 
   return (
     <main className="admin">
@@ -134,6 +137,10 @@ export function AdminPage() {
             <div className="admin__stat admin__stat--highlight">
               <span className="admin__stat-value">{pendingCount}</span>
               <span className="admin__stat-label">Onay Bekleyen</span>
+            </div>
+            <div className="admin__stat admin__stat--earnings">
+              <span className="admin__stat-value">{formatPrice(todayEarnings)}</span>
+              <span className="admin__stat-label">Kazanç</span>
             </div>
           </div>
         </div>
